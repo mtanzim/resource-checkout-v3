@@ -1,18 +1,24 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-type groupNames = "full stack team" | "mobile team";
+type groupNames = "full stack team" | "mobile team" | "cross-functional-team";
 
 async function main() {
+  await prisma.user.deleteMany();
+  await prisma.resource.deleteMany();
+  await prisma.resourceGroup.deleteMany();
   const groupUsers: Record<groupNames, string[]> = {
     "full stack team": ["developer@mail.com", "qaTester@mail.com"],
     "mobile team": ["mobile-developer@mail.com", "mobile-qaTester@mail.com"],
+    "cross-functional-team": ["developer@mail.com", "mobile-qaTester@mail.com"],
   };
 
   const groupResources: Record<groupNames, string[]> = {
     "full stack team": ["next-ui", "rails-be"],
     "mobile team": ["kotlin-ui", "go-be"],
+    "cross-functional-team": ["scala-backend", "react-spa"],
   };
+  const usedEmails = new Set<string>();
 
   return Promise.all(
     Object.entries(groupUsers).map(([groupName, userNames]) => {
@@ -20,8 +26,13 @@ async function main() {
         data: {
           title: groupName,
           users: {
-            create: userNames.map((email) => ({
-              email,
+            connectOrCreate: userNames.map((email) => ({
+              create: {
+                email: email,
+              },
+              where: {
+                email: email,
+              },
             })),
           },
           Resource: {
