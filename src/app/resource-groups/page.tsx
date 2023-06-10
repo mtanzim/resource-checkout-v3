@@ -8,7 +8,7 @@ async function getGroups(userId: number) {
 }
 
 export default async function Page() {
-  const groups = await getGroups(4);
+  const groups = await getGroups(16);
   console.log({ groups });
   return <p>{JSON.stringify(groups)}</p>;
 }

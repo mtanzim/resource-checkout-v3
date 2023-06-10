@@ -28,10 +28,10 @@ async function main() {
           users: {
             connectOrCreate: userNames.map((email) => ({
               create: {
-                email: email,
+                email,
               },
               where: {
-                email: email,
+                email,
               },
             })),
           },
