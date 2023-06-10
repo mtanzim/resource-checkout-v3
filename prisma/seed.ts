@@ -18,34 +18,38 @@ async function main() {
     "mobile team": ["kotlin-ui", "go-be"],
     "cross-functional-team": ["scala-backend", "react-spa"],
   };
-  const usedEmails = new Set<string>();
 
-  return Promise.all(
-    Object.entries(groupUsers).map(([groupName, userNames]) => {
-      return prisma.resourceGroup.create({
-        data: {
-          title: groupName,
-          users: {
-            connectOrCreate: userNames.map((email) => ({
-              create: {
-                email,
-              },
-              where: {
-                email,
-              },
+  const promises = Object.entries(groupUsers).map(([groupName, userEmails]) => {
+    return prisma.resourceGroup.create({
+      data: {
+        title: groupName,
+        users: {
+          connectOrCreate: userEmails.map((email) => ({
+            where: {
+              email,
+            },
+            create: {
+              email,
+            },
+          })),
+        },
+        Resource: {
+          createMany: {
+            data: groupResources[groupName as groupNames].map((title) => ({
+              title,
             })),
           },
-          Resource: {
-            createMany: {
-              data: groupResources[groupName as groupNames].map((title) => ({
-                title,
-              })),
-            },
-          },
         },
-      });
-    })
-  );
+      },
+    });
+  });
+
+  let i = 0;
+  for (const p of promises) {
+    console.log(`Running operation ${i}`);
+    await p;
+    i++;
+  }
 }
 main()
   .then(async () => {
