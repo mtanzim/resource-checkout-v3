@@ -24,7 +24,7 @@ export default async function Page() {
     <div>
       <h1 className="text-xl">My resource groups</h1>
       <Table groups={groups} />
-      <AddNew user={user}/>
+      <AddNew />
     </div>
   );
 }

@@ -30,7 +30,6 @@ async function addResourceGroup(data: FormData) {
       },
     },
   });
-  await Promise.resolve(console.log(newGroupName));
 }
 
 export default function AddNew() {
