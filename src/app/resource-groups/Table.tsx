@@ -1,4 +1,5 @@
 import { ResourceGroup } from "@prisma/client";
+import Row from "./Row";
 
 export const Table = ({ groups }: { groups: ResourceGroup[] }) => {
   return (
@@ -8,14 +9,13 @@ export const Table = ({ groups }: { groups: ResourceGroup[] }) => {
           <tr>
             <th></th>
             <th>Name</th>
+            <th>Action</th>
+            <th>Message</th>
           </tr>
         </thead>
         <tbody>
           {groups.map((g, idx) => (
-            <tr className="hover" key={g.id}>
-              <th>{idx + 1}</th>
-              <td>{g.title}</td>
-            </tr>
+            <Row key={g.id} g={g} idx={idx} />
           ))}
         </tbody>
       </table>
