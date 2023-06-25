@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import { ResourceGroup } from "@prisma/client";
+import { Table } from "./Table";
+import AddNew from "./AddNew";
 
 async function getGroups(userId: number) {
   const groups = await prisma.resourceGroup.findMany({
@@ -12,29 +13,6 @@ async function selectUser() {
   return prisma.user.findFirst();
 }
 
-const Table = ({ groups }: { groups: ResourceGroup[] }) => {
-  return (
-    <div className="overflow-x-auto p-8">
-      <table className="table">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Name</th>
-          </tr>
-        </thead>
-        <tbody>
-          {groups.map((g, idx) => (
-            <tr className="hover" key={g.id}>
-              <th>{idx + 1}</th>
-              <td>{g.title}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-};
-
 export default async function Page() {
   // TODO: get user context
   const user = await selectUser();
@@ -46,6 +24,7 @@ export default async function Page() {
     <div>
       <h1 className="text-xl">My resource groups</h1>
       <Table groups={groups} />
+      <AddNew user={user}/>
     </div>
   );
 }
