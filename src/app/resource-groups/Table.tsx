@@ -1,18 +1,11 @@
 import { ResourceGroup } from "@prisma/client";
-import Row from "./Row";
+import { Row, HeaderRow } from "./Row";
 
 export const Table = ({ groups }: { groups: ResourceGroup[] }) => {
   return (
     <div className="overflow-x-auto p-8">
       <table className="table">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Name</th>
-            <th>Action</th>
-            <th>Message</th>
-          </tr>
-        </thead>
+        <HeaderRow />
         <tbody>
           {groups.map((g, idx) => (
             <Row key={g.id} g={g} idx={idx} />
