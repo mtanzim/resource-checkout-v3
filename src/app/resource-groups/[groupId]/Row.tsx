@@ -1,13 +1,12 @@
 "use client";
 
-import { deleteResourceGroup } from "@/actions/resourceGroup";
-import { ResourceGroup } from "@prisma/client";
-import Link from "next/link";
+import { deleteResource } from "@/actions/resources";
+import { Resource } from "@prisma/client";
 import { useState, useTransition } from "react";
 
 type Props = {
   idx: number;
-  g: ResourceGroup;
+  r: Resource;
 };
 
 export function HeaderRow() {
@@ -23,21 +22,19 @@ export function HeaderRow() {
   );
 }
 
-export function Row({ idx, g }: Props) {
+export function Row({ idx, r }: Props) {
   const [isPending, startTransition] = useTransition();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   return (
-    <tr className="hover" key={g.id}>
+    <tr className="hover" key={r.id}>
       <th className="w-1/8">{idx + 1}</th>
-      <Link href={`/resource-groups/${g.id}`}>
-        <td className="w-1/4">{g.title}</td>
-      </Link>
+      <td className="w-1/4">{r.title}</td>
       <td className="w-1/8">
         <button
           onClick={() =>
             startTransition(async () => {
               setErrorMsg(null);
-              const { error } = await deleteResourceGroup(g.id);
+              const { error } = await deleteResource(r.id);
               if (error) {
                 setErrorMsg(error);
               }

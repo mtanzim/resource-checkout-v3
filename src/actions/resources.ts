@@ -1,0 +1,61 @@
+"use server";
+
+import { prisma } from "@/lib/prisma";
+import { Resource, ResourceGroup } from "@prisma/client";
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
+
+async function selectUser() {
+  return prisma.user.findFirst();
+}
+
+const inputSchema = z.object({
+  title: z.string().max(20).min(3),
+});
+
+export async function addResource(
+  data: FormData,
+  groupId: ResourceGroup['id'],
+): Promise<{ error: string | null }> {
+  try {
+    const user = await selectUser();
+    if (!user) {
+      throw new Error("user not found");
+    }
+    const resourceName = data.get("title");
+    const { title } = inputSchema.parse({ title: resourceName });
+    await prisma.resource.create({
+      data: {
+        title,
+        groupId,
+      },
+    });
+    revalidatePath("/resources");
+    return { error: null };
+  } catch (err) {
+    console.log(err);
+    return { error: "Could not add resource" };
+  }
+}
+
+export async function deleteResource(
+  resourceId: Resource["id"]
+): Promise<{ error: string | null }> {
+  try {
+    const user = await selectUser();
+    if (!user) {
+      throw new Error("user not found");
+    }
+
+    await prisma.resource.delete({
+      where: {
+        id: resourceId,
+      },
+    });
+    revalidatePath("/resources");
+    return { error: null };
+  } catch (err) {
+    console.log(err);
+    return { error: "Could not delete resource!" };
+  }
+}
