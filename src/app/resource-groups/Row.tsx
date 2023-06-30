@@ -29,9 +29,9 @@ export function Row({ idx, g }: Props) {
   return (
     <tr className="hover" key={g.id}>
       <th className="w-1/8">{idx + 1}</th>
-      <Link href={`/resource-groups/${g.id}`}>
-        <td className="w-1/4">{g.title}</td>
-      </Link>
+      <td className="w-1/4">
+        <Link href={`/resource-groups/${g.id}`}>{g.title}</Link>
+      </td>
       <td className="w-1/8">
         <button
           onClick={() =>
