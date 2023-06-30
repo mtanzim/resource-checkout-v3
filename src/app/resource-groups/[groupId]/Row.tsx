@@ -1,12 +1,12 @@
 "use client";
 
 import { deleteResource } from "@/actions/resources";
-import { Resource } from "@prisma/client";
+import { Resource, User } from "@prisma/client";
 import { useState, useTransition } from "react";
 
 type Props = {
   idx: number;
-  r: Resource;
+  r: Resource & { currentOwner: User };
 };
 
 export function HeaderRow() {
@@ -15,8 +15,8 @@ export function HeaderRow() {
       <tr>
         <th className="w-1/8"></th>
         <th className="w-1/4">Name</th>
-        <th className="w-1/8">Action</th>
-        <th className="w-1/4"></th>
+        <th className="w-1/8">Current owner</th>
+        <th className="w-1/8"></th>
       </tr>
     </thead>
   );
@@ -29,7 +29,15 @@ export function Row({ idx, r }: Props) {
     <tr className="hover" key={r.id}>
       <th className="w-1/8">{idx + 1}</th>
       <td className="w-1/4">{r.title}</td>
-      <td className="w-1/8">
+      <td>
+        {r.userId ? (
+          <p>{r.currentOwner.email}</p>
+        ) : (
+          <button className="btn btn-success">Check out</button>
+        )}
+      </td>
+      {/* Fix delete flow for resources */}
+      <td className="w-1/8 hidden">
         <button
           onClick={() =>
             startTransition(async () => {

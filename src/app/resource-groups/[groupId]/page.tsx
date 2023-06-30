@@ -13,6 +13,9 @@ async function getResources(groupId: number) {
     where: {
       groupId,
     },
+    include: {
+      currentOwner: true,
+    },
   });
 }
 
@@ -31,8 +34,8 @@ export default async function Page({ params: rawParams }: never) {
   return (
     <div>
       <h1 className="text-xl">Resources</h1>
-      <Link href='/resource-groups'>
-      <button className="btn btn-xs btn-secondary">Back</button>
+      <Link href="/resource-groups">
+        <button className="btn btn-xs btn-secondary">Back</button>
       </Link>
       <Table resources={resources} />
       <AddNew groupId={groupId} />
