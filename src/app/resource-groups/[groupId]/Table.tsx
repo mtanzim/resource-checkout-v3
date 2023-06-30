@@ -1,7 +1,11 @@
-import { Resource, ResourceGroup } from "@prisma/client";
+import { Resource, ResourceGroup, User } from "@prisma/client";
 import { Row, HeaderRow } from "./Row";
 
-export const Table = ({ resources }: { resources: Resource[] }) => {
+type Props = {
+  resources: Array<Resource & { currentOwner: User }>;
+};
+
+export const Table = ({ resources }: Props) => {
   return (
     <div className="overflow-x-auto p-8">
       <table className="table">
