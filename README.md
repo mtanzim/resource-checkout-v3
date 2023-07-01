@@ -1,6 +1,12 @@
 # resource-checkout
 
-## Database
+## Why
+
+- Experiment with React server components and server actions with NextJS v13
+
+## Getting started
+
+To set up the database:
 
 ```bash
 docker-compose up -d
@@ -9,3 +15,7 @@ npx prisma db push
 npx prisma studio
 npx prisma db seed
 ```
+
+To start the dev server:
+
+`npm run dev`
