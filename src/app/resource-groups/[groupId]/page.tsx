@@ -17,6 +17,9 @@ async function getResources(groupId: number) {
     include: {
       currentOwner: true,
     },
+    orderBy: {
+      title: "asc",
+    },
   });
 }
 

@@ -5,6 +5,9 @@ import { AddNew } from "./AddNew";
 async function getGroups(userId: number) {
   const groups = await prisma.resourceGroup.findMany({
     where: { users: { some: { id: userId } } },
+    orderBy: {
+      title: "asc",
+    },
   });
   return groups;
 }
