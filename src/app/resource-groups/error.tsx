@@ -15,9 +15,9 @@ export default function Error({
 
   return (
     <div>
-      <h2>Something went wrong!</h2>
+      <h2 className="text-2xl my-2">Something went wrong!</h2>
       <p>{error.message}</p>
-      <button className="btn btn-accent" onClick={reset}>
+      <button className="btn btn-accent my-4" onClick={reset}>
         Try again
       </button>
     </div>

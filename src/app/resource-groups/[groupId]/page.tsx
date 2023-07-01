@@ -3,6 +3,7 @@ import { z } from "zod";
 import { Table } from "./Table";
 import { AddNew } from "./AddNew";
 import Link from "next/link";
+import ManagerResources from "./ManageResources";
 
 const paramsSchema = z.object({
   groupId: z.coerce.number(),
@@ -33,12 +34,14 @@ export default async function Page({ params: rawParams }: never) {
   const resources = await getResources(groupId);
   return (
     <div>
-      <h1 className="text-xl">Resources</h1>
+      <h1 className="text-2xl">Resources</h1>
       <Link href="/resource-groups">
         <button className="btn btn-xs btn-secondary">Back</button>
       </Link>
       <Table resources={resources} />
       <AddNew groupId={groupId} />
+      <div className="divider" />
+      <ManagerResources resources={resources} />
     </div>
   );
 }

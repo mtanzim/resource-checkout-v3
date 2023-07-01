@@ -22,7 +22,7 @@ export default async function Page() {
   const groups = await getGroups(user.id);
   return (
     <div>
-      <h1 className="text-xl">My resource groups</h1>
+      <h1 className="text-2xl">My resource groups</h1>
       <Table groups={groups} />
       <AddNew />
     </div>

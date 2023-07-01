@@ -6,7 +6,7 @@ import { useState, useTransition } from "react";
 
 type Props = {
   idx: number;
-  r: Resource & { currentOwner: User };
+  r: Resource & { currentOwner: User | null };
 };
 
 export function HeaderRow() {
@@ -16,7 +16,6 @@ export function HeaderRow() {
         <th className="w-1/8"></th>
         <th className="w-1/4">Name</th>
         <th className="w-1/8">Current owner</th>
-        <th className="w-1/8"></th>
       </tr>
     </thead>
   );
@@ -30,28 +29,11 @@ export function Row({ idx, r }: Props) {
       <th className="w-1/8">{idx + 1}</th>
       <td className="w-1/4">{r.title}</td>
       <td>
-        {r.userId ? (
-          <p>{r.currentOwner.email}</p>
+        {r?.currentOwner?.email ? (
+          <p>{r?.currentOwner?.email}</p>
         ) : (
           <button className="btn btn-success">Check out</button>
         )}
-      </td>
-      {/* Fix delete flow for resources */}
-      <td className="w-1/8 hidden">
-        <button
-          onClick={() =>
-            startTransition(async () => {
-              setErrorMsg(null);
-              const { error } = await deleteResource(r.id);
-              if (error) {
-                setErrorMsg(error);
-              }
-            })
-          }
-          className="btn btn-error w-24"
-        >
-          {isPending ? "Loading..." : "Delete"}
-        </button>
       </td>
       <td className="w-1/4">{errorMsg ?? errorMsg}</td>
     </tr>
