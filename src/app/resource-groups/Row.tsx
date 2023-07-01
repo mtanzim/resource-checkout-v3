@@ -17,7 +17,6 @@ export function HeaderRow() {
         <th className="w-1/8"></th>
         <th className="w-1/4">Name</th>
         <th className="w-1/8">Action</th>
-        <th className="w-1/4"></th>
       </tr>
     </thead>
   );
@@ -27,28 +26,36 @@ export function Row({ idx, g }: Props) {
   const [isPending, startTransition] = useTransition();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   return (
-    <tr className="hover" key={g.id}>
-      <th className="w-1/8">{idx + 1}</th>
-      <td className="w-1/4">
-        <Link href={`/resource-groups/${g.id}`}>{g.title}</Link>
-      </td>
-      <td className="w-1/8">
-        <button
-          onClick={() =>
-            startTransition(async () => {
-              setErrorMsg(null);
-              const { error } = await deleteResourceGroup(g.id);
-              if (error) {
-                setErrorMsg(error);
-              }
-            })
-          }
-          className="btn btn-error w-24"
-        >
-          {isPending ? "Loading..." : "Delete"}
-        </button>
-      </td>
-      <td className="w-1/4">{errorMsg ?? errorMsg}</td>
-    </tr>
+    <>
+      <tr className="hover" key={g.id}>
+        <th className="w-1/8">{idx + 1}</th>
+        <td className="w-1/4">
+          <Link href={`/resource-groups/${g.id}`}>{g.title}</Link>
+        </td>
+        <td className="w-1/8">
+          <button
+            onClick={() =>
+              startTransition(async () => {
+                setErrorMsg(null);
+                const { error } = await deleteResourceGroup(g.id);
+                if (error) {
+                  setErrorMsg(error);
+                }
+              })
+            }
+            className="btn btn-error w-24"
+          >
+            {isPending ? "Loading..." : "Delete"}
+          </button>
+        </td>
+      </tr>
+      {errorMsg && (
+        <div className="toast">
+          <div className="alert alert-warning">
+            <span>{errorMsg}</span>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

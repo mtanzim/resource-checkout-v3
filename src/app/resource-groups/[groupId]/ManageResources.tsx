@@ -15,7 +15,10 @@ export default function ManagerResources({ resources, children }: Props) {
   return (
     <div className="collapse bg-base-200">
       <input type="checkbox" />
-      <div className="collapse-title text-xl font-medium">Manage Resources</div>
+      <div className="collapse-title text-xl font-medium">
+        Manage Resources
+        <span className="m-4 badge badge-primary badge-outline">Admin</span>
+      </div>
       <div className="collapse-content">
         {children}
         {resources.map((r) => (
