@@ -5,9 +5,10 @@ import { Resource, User } from "@prisma/client";
 
 type Props = {
   resources: Array<Resource & { currentOwner: User | null }>;
+  children: React.ReactNode;
 };
 
-export default function ManagerResources({ resources }: Props) {
+export default function ManagerResources({ resources, children }: Props) {
   const onDelete = async (id: Resource["id"]) => {
     return deleteResource(id);
   };
@@ -16,6 +17,7 @@ export default function ManagerResources({ resources }: Props) {
       <input type="checkbox" />
       <div className="collapse-title text-xl font-medium">Manage Resources</div>
       <div className="collapse-content">
+        {children}
         {resources.map((r) => (
           <div className="flex gap-4 my-4" key={r.id}>
             <p>{r.title}</p>

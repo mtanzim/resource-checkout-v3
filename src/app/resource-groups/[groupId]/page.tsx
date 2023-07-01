@@ -39,9 +39,10 @@ export default async function Page({ params: rawParams }: never) {
         <button className="btn btn-xs btn-secondary">Back</button>
       </Link>
       <Table resources={resources} />
-      <AddNew groupId={groupId} />
       <div className="divider" />
-      <ManagerResources resources={resources} />
+      <ManagerResources resources={resources}>
+        <AddNew groupId={groupId} />
+      </ManagerResources>
     </div>
   );
 }
