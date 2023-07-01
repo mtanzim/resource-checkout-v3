@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { Resource, ResourceGroup } from "@prisma/client";
+import { Resource, ResourceGroup, User } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -13,9 +13,37 @@ const inputSchema = z.object({
   title: z.string().max(20).min(3),
 });
 
+type AllocateResourceArgs = {
+  resourceId: Resource["id"];
+  userId: User["id"];
+};
+
+export async function allocateResource({
+  userId,
+  resourceId,
+}: AllocateResourceArgs) {
+  return prisma.resource
+    .update({
+      where: {
+        id: resourceId,
+      },
+      data: {
+        userId,
+      },
+    })
+    .then(() => {
+      revalidatePath("/resources");
+      return { error: null };
+    })
+    .catch((err) => {
+      console.log(err);
+      return { error: "Could not allocate resource" };
+    });
+}
+
 export async function addResource(
   data: FormData,
-  groupId: ResourceGroup['id'],
+  groupId: ResourceGroup["id"]
 ): Promise<{ error: string | null }> {
   try {
     const user = await selectUser();

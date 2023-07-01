@@ -38,7 +38,7 @@ export default async function Page({ params: rawParams }: never) {
       <Link href="/resource-groups">
         <button className="btn btn-xs btn-secondary">Back</button>
       </Link>
-      <Table resources={resources} />
+      <Table resources={resources} user={user} />
       <div className="divider" />
       <ManagerResources resources={resources}>
         <AddNew groupId={groupId} />
