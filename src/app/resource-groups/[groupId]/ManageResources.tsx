@@ -12,19 +12,22 @@ export default function ManagerResources({ resources }: Props) {
     return deleteResource(id);
   };
   return (
-    <div className="mt-4">
-      <h2 className="text-xl mb-4">Manage Resources</h2>
-      {resources.map((r) => (
-        <div className="flex gap-4 my-4" key={r.id}>
-          <p>{r.title}</p>
-          <button
-            onClick={() => onDelete(r.id)}
-            className="btn btn-xs btn-error"
-          >
-            Delete
-          </button>
-        </div>
-      ))}
+    <div className="collapse bg-base-200">
+      <input type="checkbox" />
+      <div className="collapse-title text-xl font-medium">Manage Resources</div>
+      <div className="collapse-content">
+        {resources.map((r) => (
+          <div className="flex gap-4 my-4" key={r.id}>
+            <p>{r.title}</p>
+            <button
+              onClick={() => onDelete(r.id)}
+              className="btn btn-xs btn-error"
+            >
+              Delete
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
