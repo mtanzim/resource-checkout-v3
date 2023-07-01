@@ -1,3 +1,5 @@
+import { redirect } from 'next/navigation'
+
 export default function Home() {
-  <p>Hello Next App!</p>;
+  return redirect('/resource-groups')
 }

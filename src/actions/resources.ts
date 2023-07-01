@@ -15,7 +15,7 @@ const inputSchema = z.object({
 
 type AllocateResourceArgs = {
   resourceId: Resource["id"];
-  userId: User["id"];
+  userId: User["id"] | null;
 };
 
 export async function allocateResource({
