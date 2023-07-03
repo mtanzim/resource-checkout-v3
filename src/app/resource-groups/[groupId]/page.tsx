@@ -4,6 +4,7 @@ import { Table } from "./Table";
 import { AddNew } from "./AddNew";
 import Link from "next/link";
 import ManagerResources from "./ManageResources";
+import { currentUser } from "@clerk/nextjs";
 
 const paramsSchema = z.object({
   groupId: z.coerce.number(),
@@ -14,22 +15,15 @@ async function getResources(groupId: number) {
     where: {
       groupId,
     },
-    include: {
-      currentOwner: true,
-    },
     orderBy: {
       title: "asc",
     },
   });
 }
 
-async function selectUser() {
-  return prisma.user.findFirst();
-}
-
 export default async function Page({ params: rawParams }: never) {
   // TODO: get user context
-  const user = await selectUser();
+  const user = await currentUser();
   if (!user) {
     throw new Error("user not found");
   }

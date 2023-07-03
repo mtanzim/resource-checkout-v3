@@ -1,7 +1,8 @@
 "use client";
 
-import { allocateResource, deleteResource } from "@/actions/resources";
-import { Resource, User } from "@prisma/client";
+import { allocateResource } from "@/actions/resources";
+import { useAuth } from "@clerk/nextjs";
+import { Resource } from "@prisma/client";
 import { useState, useTransition } from "react";
 
 type Props = {
@@ -24,14 +25,21 @@ export function HeaderRow() {
 }
 
 export function Row({ idx, r, user }: Props) {
+  const { userId } = useAuth();
   const [isPending, startTransition] = useTransition();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const assignResourceLocal = async (
-    userId: User["id"] | null,
+    userId: string | null,
     resourceId: Resource["id"]
   ) => {
+    if (!userId) {
+      return;
+    }
     setErrorMsg(null);
-    const { error } = await allocateResource({ userId, resourceId });
+    const { error } = await allocateResource({
+      currentOwner: userId,
+      resourceId,
+    });
     if (error) {
       setErrorMsg(error);
     }

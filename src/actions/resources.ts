@@ -12,11 +12,11 @@ const inputSchema = z.object({
 
 type AllocateResourceArgs = {
   resourceId: Resource["id"];
-  userId: User["id"] | null;
+  currentOwner: string;
 };
 
 export async function allocateResource({
-  userId,
+  currentOwner,
   resourceId,
 }: AllocateResourceArgs) {
   return prisma.resource
@@ -25,7 +25,7 @@ export async function allocateResource({
         id: resourceId,
       },
       data: {
-        userId,
+        currentOwner,
       },
     })
     .then(() => {
@@ -38,14 +38,14 @@ export async function allocateResource({
     });
 }
 
+// TODO: this may not be secure
 export async function addResource(
   data: FormData,
-  groupId: ResourceGroup["id"]
+  groupId: ResourceGroup["id"],
+  userId: string
 ): Promise<{ error: string | null }> {
   try {
-    const user = await currentUser();
-
-    if (!user) {
+    if (!userId) {
       throw new Error("user not found");
     }
     const resourceName = data.get("title");
@@ -64,13 +64,13 @@ export async function addResource(
   }
 }
 
+// TODO: check api protection
 export async function deleteResource(
-  resourceId: Resource["id"]
+  resourceId: Resource["id"],
+  userId: string
 ): Promise<{ error: string | null }> {
   try {
-    const user = await currentUser();
-
-    if (!user) {
+    if (!userId) {
       throw new Error("user not found");
     }
 

@@ -13,7 +13,6 @@ docker-compose up -d
 # wait a bit!
 npx prisma db push
 npx prisma studio
-npx prisma db seed
 ```
 
 To start the dev server:
