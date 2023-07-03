@@ -1,6 +1,7 @@
 "use client";
 
 import { deleteResourceGroup } from "@/actions/resourceGroup";
+import { useAuth } from "@clerk/nextjs";
 import { ResourceGroup } from "@prisma/client";
 import Link from "next/link";
 import { useState, useTransition } from "react";
@@ -25,6 +26,12 @@ export function HeaderRow() {
 export function Row({ idx, g }: Props) {
   const [isPending, startTransition] = useTransition();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const { userId } = useAuth();
+
+  if (!userId) {
+    return null;
+  }
+
   return (
     <>
       <tr className="hover" key={g.id}>
@@ -37,7 +44,7 @@ export function Row({ idx, g }: Props) {
             onClick={() =>
               startTransition(async () => {
                 setErrorMsg(null);
-                const { error } = await deleteResourceGroup(g.id);
+                const { error } = await deleteResourceGroup(g.id, userId);
                 if (error) {
                   setErrorMsg(error);
                 }

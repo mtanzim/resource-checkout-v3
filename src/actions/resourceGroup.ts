@@ -36,12 +36,24 @@ export async function addResourceGroup(
 }
 
 export async function deleteResourceGroup(
-  resourceGroupId: ResourceGroup["id"]
+  resourceGroupId: ResourceGroup["id"],
+  userId: string | null
 ): Promise<{ error: string | null }> {
   try {
-    const user = await selectUser();
-    if (!user) {
+    if (!userId) {
       throw new Error("user not found");
+    }
+
+    const toDelete = await prisma.resourceGroup.findMany({
+      where: {
+        id: resourceGroupId,
+        AND: {
+          admins: { has: userId },
+        },
+      },
+    });
+    if (toDelete.length < 1) {
+      throw new Error("user is not an admin");
     }
 
     await prisma.resourceGroup.delete({
