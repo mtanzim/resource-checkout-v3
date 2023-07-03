@@ -15,7 +15,7 @@
     "jsx": "preserve",
     "incremental": true,
     "noImplicitAny": true,
-    "noUnusedLocals":true,
+    "noUnusedLocals": true,
     "noUnusedParameters": true,
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,

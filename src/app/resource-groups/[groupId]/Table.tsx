@@ -13,7 +13,9 @@ export const Table = ({ resources, userId, userMap }: Props) => {
     if (!userId) {
       return "";
     }
-    return `${userMap.get(userId)?.firstName ?? ""} ${userMap.get(userId)?.lastName ?? ""}`;
+    return `${userMap.get(userId)?.firstName ?? ""} ${
+      userMap.get(userId)?.lastName ?? ""
+    }`;
   };
 
   return (

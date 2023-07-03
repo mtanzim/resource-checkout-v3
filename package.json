@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "typecheck": "npx tsc",
+    "prettier": "npx prettier --write ."
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
@@ -31,6 +33,7 @@
   },
   "devDependencies": {
     "daisyui": "^3.0.23",
+    "prettier": "2.8.8",
     "prisma": "^4.15.0"
   }
 }
