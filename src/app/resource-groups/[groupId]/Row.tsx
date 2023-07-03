@@ -7,8 +7,7 @@ import { useState, useTransition } from "react";
 
 type Props = {
   idx: number;
-  r: Resource & { currentOwner: User | null };
-  user: User;
+  r: Resource;
 };
 
 export function HeaderRow() {
@@ -24,17 +23,19 @@ export function HeaderRow() {
   );
 }
 
-export function Row({ idx, r, user }: Props) {
+export function Row({ idx, r }: Props) {
   const { userId } = useAuth();
   const [isPending, startTransition] = useTransition();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  if (!userId) {
+    return null;
+  }
+
   const assignResourceLocal = async (
     userId: string | null,
     resourceId: Resource["id"]
   ) => {
-    if (!userId) {
-      return;
-    }
     setErrorMsg(null);
     const { error } = await allocateResource({
       currentOwner: userId,
@@ -46,7 +47,7 @@ export function Row({ idx, r, user }: Props) {
   };
 
   const genAction = (r: Resource) => {
-    if (r?.userId === user.id) {
+    if (r?.currentOwner === userId) {
       return (
         <button
           onClick={() => startTransition(() => assignResourceLocal(null, r.id))}
@@ -56,14 +57,12 @@ export function Row({ idx, r, user }: Props) {
         </button>
       );
     }
-    if (r?.userId) {
+    if (r?.currentOwner) {
       return <button className="btn btn-warning">Nudge</button>;
     }
     return (
       <button
-        onClick={() =>
-          startTransition(() => assignResourceLocal(user.id, r.id))
-        }
+        onClick={() => startTransition(() => assignResourceLocal(userId, r.id))}
         className="btn btn-success"
       >
         {isPending ? "Loading..." : "Check out"}
@@ -76,9 +75,7 @@ export function Row({ idx, r, user }: Props) {
       <tr className="hover" key={r.id}>
         <th className="w-1/8">{idx + 1}</th>
         <td className="w-1/4">{r.title}</td>
-        <td className="w-1/4">
-          {r?.currentOwner?.email ?? r?.currentOwner?.email}{" "}
-        </td>
+        <td className="w-1/4">{r.currentOwner}</td>
         <td>{genAction(r)} </td>
       </tr>
       {errorMsg && (

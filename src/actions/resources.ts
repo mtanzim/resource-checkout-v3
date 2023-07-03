@@ -1,7 +1,6 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { currentUser } from "@clerk/nextjs";
 import { Resource, ResourceGroup } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -12,7 +11,7 @@ const inputSchema = z.object({
 
 type AllocateResourceArgs = {
   resourceId: Resource["id"];
-  currentOwner: string;
+  currentOwner: string | null;
 };
 
 export async function allocateResource({
