@@ -1,10 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { Table } from "./Table";
 import { AddNew } from "./AddNew";
+import { currentUser } from "@clerk/nextjs";
 
-async function getGroups(userId: number) {
+async function getGroups(userId: string) {
   const groups = await prisma.resourceGroup.findMany({
-    where: { users: { some: { id: userId } } },
+    where: { users: { hasSome: userId } },
     orderBy: {
       title: "asc",
     },
@@ -12,13 +13,9 @@ async function getGroups(userId: number) {
   return groups;
 }
 
-async function selectUser() {
-  return prisma.user.findFirst();
-}
-
 export default async function Page() {
   // TODO: get user context
-  const user = await selectUser();
+  const user = await currentUser();
   if (!user) {
     throw new Error("user not found");
   }

@@ -2,14 +2,19 @@
 
 import { addResourceGroup } from "@/actions/resourceGroup";
 import { useState } from "react";
+import { useAuth } from "@clerk/nextjs";
 
 export function AddNew() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const { userId } = useAuth();
+  if (!userId) {
+    return null;
+  }
   return (
     <form
       action={async (formData: FormData) => {
         setErrorMsg(null);
-        const { error } = await addResourceGroup(formData);
+        const { error } = await addResourceGroup(formData, userId);
         if (error) {
           setErrorMsg(error);
         }

@@ -1,13 +1,10 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { Resource, ResourceGroup, User } from "@prisma/client";
+import { currentUser } from "@clerk/nextjs";
+import { Resource, ResourceGroup } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-
-async function selectUser() {
-  return prisma.user.findFirst();
-}
 
 const inputSchema = z.object({
   title: z.string().max(20).min(3),
@@ -46,7 +43,8 @@ export async function addResource(
   groupId: ResourceGroup["id"]
 ): Promise<{ error: string | null }> {
   try {
-    const user = await selectUser();
+    const user = await currentUser();
+
     if (!user) {
       throw new Error("user not found");
     }
@@ -70,7 +68,8 @@ export async function deleteResource(
   resourceId: Resource["id"]
 ): Promise<{ error: string | null }> {
   try {
-    const user = await selectUser();
+    const user = await currentUser();
+
     if (!user) {
       throw new Error("user not found");
     }
