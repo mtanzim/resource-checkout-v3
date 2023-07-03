@@ -1,7 +1,6 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { auth } from "@clerk/nextjs";
 import { ResourceGroup } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
