@@ -70,7 +70,12 @@ export default async function Page({ params: rawParams }: never) {
       <Link href="/resource-groups">
         <button className="btn btn-xs btn-secondary">Back</button>
       </Link>
-      <Table userMap={userMap} resources={resources} userId={user.id} />
+      {resources.length > 0 ? (
+        <Table userMap={userMap} resources={resources} userId={user.id} />
+      ) : (
+        <p className="text my-4">Please add resources to get started.</p>
+      )}
+
       <div className="divider" />
       {isAdmin && (
         <ManagerResources resources={resources}>

@@ -23,7 +23,12 @@ export default async function Page() {
   return (
     <div>
       <h1 className="text-2xl">My resource groups</h1>
-      <Table groups={groups} />
+      {groups.length > 0 ? (
+        <Table groups={groups} />
+      ) : (
+        <p className="text my-4">Please add resource groups to get started.</p>
+      )}
+      <div className="divider"></div>
       <AddNew />
     </div>
   );
