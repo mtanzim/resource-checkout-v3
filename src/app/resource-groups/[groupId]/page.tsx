@@ -4,7 +4,8 @@ import { Table } from "./Table";
 import { AddNew } from "./AddNew";
 import Link from "next/link";
 import ManagerResources from "./ManageResources";
-import { currentUser } from "@clerk/nextjs";
+import { clerkClient, currentUser } from "@clerk/nextjs";
+import { User } from "@clerk/backend";
 
 const paramsSchema = z.object({
   groupId: z.coerce.number(),
@@ -35,23 +36,41 @@ async function isCurrentUserAdmin(userId: string, groupId: number) {
   return groups.length > 0;
 }
 
+async function getClerkUser(userId: string) {
+  return clerkClient.users.getUser(userId);
+}
+
 export default async function Page({ params: rawParams }: never) {
   // TODO: get user context
   const user = await currentUser();
   if (!user) {
-    throw new Error("user not found");
+    return null;
   }
   const { groupId } = paramsSchema.parse(rawParams);
   const isAdmin = await isCurrentUserAdmin(user.id, groupId);
 
   const resources = await getResources(groupId);
+  const userIds = resources
+    .map((r) => r.currentOwner)
+    .filter(Boolean) as string[];
+  const userInfo = await Promise.allSettled(userIds.map(getClerkUser));
+  const filteredInfo = (
+    userInfo.filter(
+      (ui) => ui.status === "fulfilled"
+    ) as PromiseFulfilledResult<User>[]
+  ).map((ui) => ui.value);
+  const userMap = new Map<string, User>();
+  filteredInfo.forEach((u) => {
+    userMap.set(u.id, u);
+  });
+
   return (
     <div>
       <h1 className="text-2xl">Resources</h1>
       <Link href="/resource-groups">
         <button className="btn btn-xs btn-secondary">Back</button>
       </Link>
-      <Table resources={resources} user={user} />
+      <Table userMap={userMap} resources={resources} userId={user.id} />
       <div className="divider" />
       {isAdmin && (
         <ManagerResources resources={resources}>

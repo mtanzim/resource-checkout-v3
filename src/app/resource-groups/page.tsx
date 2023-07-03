@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
-import { Table } from "./Table";
-import { AddNew } from "./AddNew";
 import { currentUser } from "@clerk/nextjs";
+import { AddNew } from "./AddNew";
+import { Table } from "./Table";
 
 async function getGroups(userId: string) {
   const groups = await prisma.resourceGroup.findMany({

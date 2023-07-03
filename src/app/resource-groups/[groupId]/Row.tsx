@@ -1,13 +1,14 @@
 "use client";
 
 import { allocateResource } from "@/actions/resources";
-import { useAuth } from "@clerk/nextjs";
 import { Resource } from "@prisma/client";
 import { useState, useTransition } from "react";
 
 type Props = {
   idx: number;
   r: Resource;
+  userId: string;
+  curOwnerLabel: string;
 };
 
 export function HeaderRow() {
@@ -23,8 +24,7 @@ export function HeaderRow() {
   );
 }
 
-export function Row({ idx, r }: Props) {
-  const { userId } = useAuth();
+export function Row({ idx, r, userId, curOwnerLabel }: Props) {
   const [isPending, startTransition] = useTransition();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -75,7 +75,7 @@ export function Row({ idx, r }: Props) {
       <tr className="hover" key={r.id}>
         <th className="w-1/8">{idx + 1}</th>
         <td className="w-1/4">{r.title}</td>
-        <td className="w-1/4">{r.currentOwner}</td>
+        <td className="w-1/4">{curOwnerLabel}</td>
         <td>{genAction(r)} </td>
       </tr>
       {errorMsg && (
