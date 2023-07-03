@@ -21,6 +21,20 @@ async function getResources(groupId: number) {
   });
 }
 
+async function isCurrentUserAdmin(userId: string, groupId: number) {
+  const groups = await prisma.resourceGroup.findMany({
+    where: {
+      id: groupId,
+      AND: {
+        admins: {
+          has: userId,
+        },
+      },
+    },
+  });
+  return groups.length > 0;
+}
+
 export default async function Page({ params: rawParams }: never) {
   // TODO: get user context
   const user = await currentUser();
@@ -28,6 +42,8 @@ export default async function Page({ params: rawParams }: never) {
     throw new Error("user not found");
   }
   const { groupId } = paramsSchema.parse(rawParams);
+  const isAdmin = await isCurrentUserAdmin(user.id, groupId);
+
   const resources = await getResources(groupId);
   return (
     <div>
@@ -37,9 +53,11 @@ export default async function Page({ params: rawParams }: never) {
       </Link>
       <Table resources={resources} user={user} />
       <div className="divider" />
-      <ManagerResources resources={resources}>
-        <AddNew groupId={groupId} />
-      </ManagerResources>
+      {isAdmin && (
+        <ManagerResources resources={resources}>
+          <AddNew groupId={groupId} />
+        </ManagerResources>
+      )}
     </div>
   );
 }
