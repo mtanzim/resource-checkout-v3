@@ -17,7 +17,7 @@ type Props = {
   users: AppUser[];
 };
 
-export default async function ManageUsers({
+export default function ManageUsers({
   children,
   resourceGroupId,
   users,
@@ -50,7 +50,7 @@ export default async function ManageUsers({
                 onClick={() => onDelete(u.id)}
                 className="btn btn-xs btn-error"
               >
-                Delete
+                Remove
               </button>
             )}
           </div>

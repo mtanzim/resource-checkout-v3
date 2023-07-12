@@ -102,7 +102,7 @@ export default async function Page({ params: rawParams }: never) {
       <div className="divider" />
       {isAdmin && (
         <ManageUsers resourceGroupId={groupId} users={appUsers}>
-          <p>Still working on the form</p>
+          <p className="text-red-500">Still working on the form</p>
         </ManageUsers>
       )}
     </div>
