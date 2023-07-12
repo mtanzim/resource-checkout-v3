@@ -1,11 +1,13 @@
+import { gatherUserDetails } from "@/actions/users";
 import { prisma } from "@/lib/prisma";
-import { z } from "zod";
-import { Table } from "./Table";
-import { AddNew } from "./AddNew";
-import Link from "next/link";
-import ManagerResources from "./ManageResources";
-import { clerkClient, currentUser } from "@clerk/nextjs";
 import { User } from "@clerk/backend";
+import { currentUser } from "@clerk/nextjs";
+import Link from "next/link";
+import { z } from "zod";
+import { AddNew } from "./AddNew";
+import ManagerResources from "./ManageResources";
+import ManageUsers, { AppUser } from "./ManageUsers";
+import { Table } from "./Table";
 
 const paramsSchema = z.object({
   groupId: z.coerce.number(),
@@ -36,8 +38,18 @@ async function isCurrentUserAdmin(userId: string, groupId: number) {
   return groups.length > 0;
 }
 
-async function getClerkUser(userId: string) {
-  return clerkClient.users.getUser(userId);
+async function getCurrentGroup(userId: string, groupId: ResourceGroup["id"]) {
+  const groups = await prisma.resourceGroup.findMany({
+    where: {
+      id: groupId,
+      AND: {
+        users: {
+          has: userId,
+        },
+      },
+    },
+  });
+  return groups?.at(0);
 }
 
 export default async function Page({ params: rawParams }: never) {
@@ -49,18 +61,22 @@ export default async function Page({ params: rawParams }: never) {
   const { groupId } = paramsSchema.parse(rawParams);
   const isAdmin = await isCurrentUserAdmin(user.id, groupId);
 
+  const group = await getCurrentGroup(user.id, groupId);
+  if (!group) {
+    throw new Error("group not found");
+  }
+
+  const users = await gatherUserDetails(group.users);
+  const appUsers: AppUser[] = users.map((u) => ({
+    firstName: u.firstName,
+    id: u.id,
+    lastName: u.lastName,
+    username: u.username,
+  }));
+
   const resources = await getResources(groupId);
-  const userIds = resources
-    .map((r) => r.currentOwner)
-    .filter(Boolean) as string[];
-  const userInfo = await Promise.allSettled(userIds.map(getClerkUser));
-  const filteredInfo = (
-    userInfo.filter(
-      (ui) => ui.status === "fulfilled"
-    ) as PromiseFulfilledResult<User>[]
-  ).map((ui) => ui.value);
   const userMap = new Map<string, User>();
-  filteredInfo.forEach((u) => {
+  users.forEach((u) => {
     userMap.set(u.id, u);
   });
 
@@ -81,6 +97,13 @@ export default async function Page({ params: rawParams }: never) {
         <ManagerResources resources={resources}>
           <AddNew groupId={groupId} />
         </ManagerResources>
+      )}
+
+      <div className="divider" />
+      {isAdmin && (
+        <ManageUsers resourceGroupId={groupId} users={appUsers}>
+          <p>Still working on the form</p>
+        </ManageUsers>
       )}
     </div>
   );

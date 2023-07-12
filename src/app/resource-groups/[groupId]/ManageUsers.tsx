@@ -1,22 +1,26 @@
 "use client";
 
 import { removeUserFromGroup } from "@/actions/resourceGroup";
-import { deleteResource } from "@/actions/resources";
-import { gatherUserDetails } from "@/actions/users";
-import { User } from "@clerk/backend";
 import { useAuth } from "@clerk/nextjs";
-import { Resource, ResourceGroup } from "@prisma/client";
+import { ResourceGroup } from "@prisma/client";
+
+export type AppUser = {
+  id: string;
+  username: string | null;
+  firstName: string | null;
+  lastName: string | null;
+};
 
 type Props = {
-  users: Array<User>;
   children: React.ReactNode;
   resourceGroupId: ResourceGroup["id"];
+  users: AppUser[];
 };
 
 export default async function ManageUsers({
-  users,
   children,
   resourceGroupId,
+  users,
 }: Props) {
   const { userId } = useAuth();
 
@@ -31,7 +35,7 @@ export default async function ManageUsers({
     <div className="collapse bg-base-200">
       <input type="checkbox" />
       <div className="collapse-title text-xl font-medium">
-        Manage Resources
+        Manage Users
         <span className="m-4 badge badge-primary badge-outline">Admin</span>
       </div>
       <div className="collapse-content">
@@ -41,12 +45,14 @@ export default async function ManageUsers({
             <p>
               {u.firstName} {u.lastName}
             </p>
-            <button
-              onClick={() => onDelete(u.id)}
-              className="btn btn-xs btn-error"
-            >
-              Delete
-            </button>
+            {u.id !== userId && (
+              <button
+                onClick={() => onDelete(u.id)}
+                className="btn btn-xs btn-error"
+              >
+                Delete
+              </button>
+            )}
           </div>
         ))}
       </div>
