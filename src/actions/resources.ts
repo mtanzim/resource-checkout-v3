@@ -63,6 +63,8 @@ export async function addResource(
   }
 }
 
+
+
 // TODO: check api protection
 export async function deleteResource(
   resourceId: Resource["id"],
