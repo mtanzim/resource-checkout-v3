@@ -4,7 +4,7 @@ import { User } from "@clerk/backend";
 import { currentUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { z } from "zod";
-import { AddNew } from "./AddNew";
+import { AddNewResource } from "./AddNewResource";
 import ManagerResources from "./ManageResources";
 import ManageUsers, { AppUser } from "./ManageUsers";
 import { Table } from "./Table";
@@ -92,18 +92,17 @@ export default async function Page({ params: rawParams }: never) {
         <p className="text my-4">Please add resources to get started.</p>
       )}
 
-      <div className="divider" />
       {isAdmin && (
-        <ManagerResources resources={resources}>
-          <AddNew groupId={groupId} />
-        </ManagerResources>
-      )}
-
-      <div className="divider" />
-      {isAdmin && (
-        <ManageUsers resourceGroupId={groupId} users={appUsers}>
-          <p className="text-red-500">Still working on the form</p>
-        </ManageUsers>
+        <>
+          <div className="divider" />
+          <ManagerResources resources={resources}>
+            <AddNewResource groupId={groupId} />
+          </ManagerResources>
+          <div className="divider" />
+          <ManageUsers resourceGroupId={groupId} users={appUsers}>
+            <p className="text-red-500">Still working on the form</p>
+          </ManageUsers>
+        </>
       )}
     </div>
   );

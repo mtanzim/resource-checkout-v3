@@ -4,7 +4,7 @@ import { addResource } from "@/actions/resources";
 import { useAuth } from "@clerk/nextjs";
 import { useState } from "react";
 
-export function AddNew({ groupId }: { groupId: number }) {
+export function AddNewResource({ groupId }: { groupId: number }) {
   const { userId } = useAuth();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   if (!userId) {
