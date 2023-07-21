@@ -1,32 +1,40 @@
 "use client";
 
-import { getAdminList, removeUserFromGroup } from "@/actions/resourceGroup";
+import {
+  makeUserAdmin,
+  removeUserFromAdmin,
+  removeUserFromGroup,
+} from "@/actions/resourceGroup";
 import { AppUser } from "@/types";
 import { useAuth } from "@clerk/nextjs";
 import { ResourceGroup } from "@prisma/client";
-import { useEffect, useState } from "react";
 
 type Props = {
   children: React.ReactNode;
   resourceGroupId: ResourceGroup["id"];
   users: AppUser[];
+  adminList: string[];
+};
+
+type AddUserToGroupParams = {
+  userId: string | null;
+  resourceGroupId: ResourceGroup["id"];
+  userIdToAdd: string;
+};
+
+type RemoveUserFromGroupParams = {
+  userId: string | null;
+  resourceGroupId: ResourceGroup["id"];
+  userIdToRemove: string;
 };
 
 export default function ManageUsers({
   children,
   resourceGroupId,
   users,
+  adminList,
 }: Props) {
   const { userId } = useAuth();
-  const [adminList, setAdminList] = useState<string[]>([]);
-  useEffect(() => {
-    const load = async () => {
-      const adminList = await getAdminList(resourceGroupId);
-
-      setAdminList(adminList);
-    };
-    load();
-  }, [resourceGroupId]);
 
   const isUserAdmin = (userId: string) =>
     adminList.findIndex((al) => al === userId) > 0;
@@ -38,6 +46,15 @@ export default function ManageUsers({
   const onDelete = async (userIdToRemove: string) => {
     await removeUserFromGroup({ resourceGroupId, userId, userIdToRemove });
   };
+
+  const makeAdmin = async (args: AddUserToGroupParams) => {
+    await makeUserAdmin(args);
+  };
+
+  const removeAdmin = async (args: RemoveUserFromGroupParams) => {
+    await removeUserFromAdmin(args);
+  };
+
   return (
     <div className="collapse bg-base-200">
       <input type="checkbox" />
@@ -60,18 +77,30 @@ export default function ManageUsers({
                 Remove
               </button>
             )}
-            {(u.id !== userId && !isUserAdmin(u.id)) && (
+            {u.id !== userId && !isUserAdmin(u.id) && (
               <button
-                onClick={() => alert("making admin")}
+                onClick={() =>
+                  makeAdmin({
+                    resourceGroupId,
+                    userId,
+                    userIdToAdd: u.id,
+                  })
+                }
                 className="btn btn-xs btn-success"
               >
                 Make admin
               </button>
             )}
-            {(u.id !== userId && isUserAdmin(u.id)) && (
+            {u.id !== userId && isUserAdmin(u.id) && (
               <button
-                onClick={() => alert("removing admin")}
-                className="btn btn-xs btn-success"
+                onClick={() =>
+                  removeAdmin({
+                    resourceGroupId,
+                    userId,
+                    userIdToRemove: u.id,
+                  })
+                }
+                className="btn btn-xs btn-error"
               >
                 Remove admin
               </button>

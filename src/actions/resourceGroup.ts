@@ -99,6 +99,11 @@ export async function removeUserFromGroup({
       throw new Error("no users available on the resource group");
     }
     const updatedUsers = currentUsers.filter((uid) => uid !== userIdToRemove);
+    const currentAdmins = toUpdate?.at(0)?.users;
+    if (!currentAdmins) {
+      throw new Error("no users available on the resource group");
+    }
+    const updatedAdmins = currentUsers.filter((uid) => uid !== userIdToRemove);
     await prisma.resourceGroup.updateMany({
       where: {
         id: resourceGroupId,
@@ -109,6 +114,9 @@ export async function removeUserFromGroup({
       data: {
         users: {
           set: updatedUsers,
+        },
+        admins: {
+          set: updatedAdmins,
         },
       },
     });
@@ -159,7 +167,7 @@ export async function getAdminList(groupId: number) {
   const group = await prisma.resourceGroup.findUnique({
     where: { id: groupId },
   });
-  return group?.admins || []
+  return group?.admins || [];
 }
 
 export async function isCurrentUserAdmin(userId: string, groupId: number) {
@@ -174,4 +182,80 @@ export async function isCurrentUserAdmin(userId: string, groupId: number) {
     },
   });
   return groups.length > 0;
+}
+
+export async function makeUserAdmin({
+  userId,
+  resourceGroupId,
+  userIdToAdd,
+}: AddUserToGroupParams): Promise<{ error: string | null }> {
+  try {
+    const toUpdate = await prisma.resourceGroup.updateMany({
+      where: {
+        id: resourceGroupId,
+        AND: {
+          admins: { has: userId },
+        },
+      },
+      data: {
+        admins: {
+          push: userIdToAdd,
+        },
+      },
+    });
+    if (toUpdate.count !== 1) {
+      throw new Error(`user id ${userIdToAdd} cannot be added as admin`);
+    }
+    revalidatePath("/resource-groups");
+    return { error: null };
+  } catch (err) {
+    console.log(err);
+    return { error: "Could not add user to resource group admins!" };
+  }
+}
+
+export async function removeUserFromAdmin({
+  userId,
+  resourceGroupId,
+  userIdToRemove,
+}: RemoveUserFromGroupParams): Promise<{ error: string | null }> {
+  try {
+    const toUpdate = await prisma.resourceGroup.findMany({
+      where: {
+        id: resourceGroupId,
+        AND: {
+          admins: { has: userId },
+        },
+      },
+    });
+    if (toUpdate.length < 1) {
+      throw new Error("user is not an admin");
+    }
+    if (toUpdate.length > 1) {
+      throw new Error("multiple groups found, invalid app state");
+    }
+    const currentAdmins = toUpdate?.at(0)?.admins;
+    if (!currentAdmins) {
+      throw new Error("no users available on the resource group");
+    }
+    const updatedAdmins = currentAdmins.filter((uid) => uid !== userIdToRemove);
+    await prisma.resourceGroup.updateMany({
+      where: {
+        id: resourceGroupId,
+        AND: {
+          admins: { has: userId },
+        },
+      },
+      data: {
+        admins: {
+          set: updatedAdmins,
+        },
+      },
+    });
+    revalidatePath("/resource-groups");
+    return { error: null };
+  } catch (err) {
+    console.log(err);
+    return { error: "Could not remove user from resource group!" };
+  }
 }
