@@ -1,7 +1,9 @@
 "use client";
 
+import { addUserToGroup } from "@/actions/resourceGroup";
 import { getUserList } from "@/actions/users";
 import { AppUser } from "@/types";
+import { type ResourceGroup } from "@prisma/client";
 import { useEffect, useState } from "react";
 
 function useDebounce<T>(value: T, delay?: number): T {
@@ -18,8 +20,14 @@ function useDebounce<T>(value: T, delay?: number): T {
   return debouncedValue;
 }
 
-export const NewUserForm = () => {
+type Props = {
+  curUserId: AppUser["id"];
+  resourceGroupId: ResourceGroup["id"];
+};
+
+export const NewUserForm = (props: Props) => {
   const [query, setQuery] = useState<string | null>(null);
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<AppUser[]>([]);
   const debouncedQuery = useDebounce<string | null>(query, 500);
   const [isLoading, setLoading] = useState(false);
@@ -41,6 +49,24 @@ export const NewUserForm = () => {
     load();
   }, [debouncedQuery]);
 
+  const addToGroup = async (
+    curUserId: AppUser["id"],
+    resourceGroupId: ResourceGroup["id"],
+    userIdToAdd: AppUser["id"]
+  ) => {
+    setToastMsg(null);
+    const res = await addUserToGroup({
+      userId: curUserId,
+      resourceGroupId,
+      userIdToAdd,
+    });
+    if (res.error) {
+      setToastMsg(res.error);
+      return;
+    }
+    setToastMsg("User added successfully!");
+  };
+
   return (
     <div>
       <h2 className="text-xl m-2">Add new users</h2>
@@ -59,7 +85,14 @@ export const NewUserForm = () => {
             suggestions.map((s) => (
               <li className="flex" key={s.id}>
                 <p>{s.primaryEmail}</p>
-                <button className="btn btn-success btn-sm mx-4">Add</button>
+                <button
+                  onClick={() =>
+                    addToGroup(props.curUserId, props.resourceGroupId, s.id)
+                  }
+                  className="btn btn-success btn-sm mx-4"
+                >
+                  Add
+                </button>
               </li>
             ))
           )}
@@ -69,8 +102,16 @@ export const NewUserForm = () => {
         {query && suggestions.length === 0 ? (
           <>
             <p>No users found!</p>
+            {/* TODO: invitations */}
             {/* <button className="btn btn-success btn-sm">Invite a new user</button> */}
           </>
+        ) : null}
+      </div>
+      <div className="toast">
+        {toastMsg ? (
+          <div className="alert alert-info">
+            <span>{toastMsg}</span>
+          </div>
         ) : null}
       </div>
     </div>
