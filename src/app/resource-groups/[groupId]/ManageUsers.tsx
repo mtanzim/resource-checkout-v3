@@ -37,7 +37,7 @@ export default function ManageUsers({
   const { userId } = useAuth();
 
   const isUserAdmin = (userId: string) =>
-    adminList.findIndex((al) => al === userId) > 0;
+    adminList.findIndex((al) => al === userId) > -1;
 
   if (!userId) {
     return null;
