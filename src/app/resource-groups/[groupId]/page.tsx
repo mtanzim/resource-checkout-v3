@@ -11,6 +11,7 @@ import { Table } from "./Table";
 import { NewUserForm } from "./NewUserForm";
 import { ResourceGroup } from "@prisma/client";
 import { AppUser } from "@/types";
+import { userToAppUser } from "@/lib/utils";
 
 const paramsSchema = z.object({
   groupId: z.coerce.number(),
@@ -70,14 +71,7 @@ export default async function Page({ params: rawParams }: never) {
   }
 
   const users = await gatherUserDetails(group.users);
-  const appUsers: AppUser[] = users.map((u) => ({
-    firstName: u.firstName,
-    id: u.id,
-    lastName: u.lastName,
-    username: u.username,
-    // TODO: fix
-    primaryEmail: ""
-  }));
+  const appUsers: AppUser[] = users.map(userToAppUser);
 
   const resources = await getResources(groupId);
   const userMap = new Map<string, User>();

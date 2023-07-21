@@ -4,8 +4,6 @@ import { getUserList } from "@/actions/users";
 import { AppUser } from "@/types";
 import { useEffect, useState } from "react";
 
-type Props = {};
-
 export const NewUserForm = () => {
   const [query, setQuery] = useState<string | undefined>();
   const [suggestions, setSuggestions] = useState<AppUser[]>([]);
@@ -29,7 +27,7 @@ export const NewUserForm = () => {
       <div className="m-2">
         <ul>
           {suggestions.map((s) => (
-            <li className="flex"  key={s.id}>
+            <li className="flex" key={s.id}>
               <p>{s.primaryEmail}</p>
               <button className="btn btn-success btn-sm mx-4">Add</button>
             </li>
