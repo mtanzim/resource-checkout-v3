@@ -68,12 +68,17 @@ export default async function Page({ params: rawParams }: never) {
 
   return (
     <div>
-      <h1 className="text-2xl">Resources</h1>
+      <h1 className="text-2xl">{group.title}</h1>
       <Link href="/resource-groups">
         <button className="btn btn-xs btn-secondary">Back</button>
       </Link>
       {resources.length > 0 ? (
-        <Table userMap={userMap} resources={resources} userId={user.id} isAdmin={isAdmin} />
+        <Table
+          userMap={userMap}
+          resources={resources}
+          userId={user.id}
+          isAdmin={isAdmin}
+        />
       ) : (
         <p className="text my-4">Please add resources to get started.</p>
       )}
