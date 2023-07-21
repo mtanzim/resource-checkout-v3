@@ -154,3 +154,24 @@ export async function addUserToGroup({
     return { error: "Could not remove user from resource group!" };
   }
 }
+
+export async function getAdminList(groupId: number) {
+  const group = await prisma.resourceGroup.findUnique({
+    where: { id: groupId },
+  });
+  return group?.admins || []
+}
+
+export async function isCurrentUserAdmin(userId: string, groupId: number) {
+  const groups = await prisma.resourceGroup.findMany({
+    where: {
+      id: groupId,
+      AND: {
+        admins: {
+          has: userId,
+        },
+      },
+    },
+  });
+  return groups.length > 0;
+}

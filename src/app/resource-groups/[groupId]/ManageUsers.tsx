@@ -1,9 +1,10 @@
 "use client";
 
-import { removeUserFromGroup } from "@/actions/resourceGroup";
+import { getAdminList, removeUserFromGroup } from "@/actions/resourceGroup";
 import { AppUser } from "@/types";
 import { useAuth } from "@clerk/nextjs";
 import { ResourceGroup } from "@prisma/client";
+import { useEffect, useState } from "react";
 
 type Props = {
   children: React.ReactNode;
@@ -17,6 +18,18 @@ export default function ManageUsers({
   users,
 }: Props) {
   const { userId } = useAuth();
+  const [adminList, setAdminList] = useState<string[]>([]);
+  useEffect(() => {
+    const load = async () => {
+      const adminList = await getAdminList(resourceGroupId);
+
+      setAdminList(adminList);
+    };
+    load();
+  }, [resourceGroupId]);
+
+  const isUserAdmin = (userId: string) =>
+    adminList.findIndex((al) => al === userId) > 0;
 
   if (!userId) {
     return null;
@@ -45,6 +58,22 @@ export default function ManageUsers({
                 className="btn btn-xs btn-error"
               >
                 Remove
+              </button>
+            )}
+            {(u.id !== userId && !isUserAdmin(u.id)) && (
+              <button
+                onClick={() => alert("making admin")}
+                className="btn btn-xs btn-success"
+              >
+                Make admin
+              </button>
+            )}
+            {(u.id !== userId && isUserAdmin(u.id)) && (
+              <button
+                onClick={() => alert("removing admin")}
+                className="btn btn-xs btn-success"
+              >
+                Remove admin
               </button>
             )}
           </div>

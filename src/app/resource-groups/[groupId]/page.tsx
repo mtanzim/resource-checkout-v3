@@ -12,6 +12,7 @@ import { NewUserForm } from "./NewUserForm";
 import { ResourceGroup } from "@prisma/client";
 import { AppUser } from "@/types";
 import { userToAppUser } from "@/lib/utils";
+import { isCurrentUserAdmin } from "@/actions/resourceGroup";
 
 const paramsSchema = z.object({
   groupId: z.coerce.number(),
@@ -26,20 +27,6 @@ async function getResources(groupId: number) {
       title: "asc",
     },
   });
-}
-
-async function isCurrentUserAdmin(userId: string, groupId: number) {
-  const groups = await prisma.resourceGroup.findMany({
-    where: {
-      id: groupId,
-      AND: {
-        admins: {
-          has: userId,
-        },
-      },
-    },
-  });
-  return groups.length > 0;
 }
 
 async function getCurrentGroup(userId: string, groupId: ResourceGroup["id"]) {
