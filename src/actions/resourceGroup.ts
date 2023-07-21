@@ -120,6 +120,19 @@ export async function removeUserFromGroup({
         },
       },
     });
+
+    // de-allocate user from resources too
+    await prisma.resource.updateMany({
+      where: {
+        groupId: resourceGroupId,
+        AND: {
+          currentOwner: userIdToRemove,
+        },
+      },
+      data: {
+        currentOwner: null,
+      },
+    });
     revalidatePath("/resource-groups");
     return { error: null };
   } catch (err) {
