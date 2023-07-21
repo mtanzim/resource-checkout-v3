@@ -23,6 +23,7 @@ function useDebounce<T>(value: T, delay?: number): T {
 type Props = {
   curUserId: AppUser["id"];
   resourceGroupId: ResourceGroup["id"];
+  curUsers: AppUser[];
 };
 
 export const NewUserForm = (props: Props) => {
@@ -31,15 +32,17 @@ export const NewUserForm = (props: Props) => {
   const [suggestions, setSuggestions] = useState<AppUser[]>([]);
   const debouncedQuery = useDebounce<string | null>(query, 500);
   const [isLoading, setLoading] = useState(false);
+
   useEffect(() => {
     const load = async () => {
       if (!debouncedQuery) {
         return;
       }
       try {
+        const curUserIdSet = new Set<string>(props.curUsers.map((u) => u.id));
         setLoading(true);
         const users = await getUserList(debouncedQuery);
-        setSuggestions(users);
+        setSuggestions(users.filter((u) => !curUserIdSet.has(u.id)));
       } catch (err) {
         console.log(err);
       } finally {
@@ -47,7 +50,7 @@ export const NewUserForm = (props: Props) => {
       }
     };
     load();
-  }, [debouncedQuery]);
+  }, [debouncedQuery, props.curUsers]);
 
   const addToGroup = async (
     curUserId: AppUser["id"],
@@ -55,11 +58,13 @@ export const NewUserForm = (props: Props) => {
     userIdToAdd: AppUser["id"]
   ) => {
     setToastMsg(null);
+    setQuery(null);
     const res = await addUserToGroup({
       userId: curUserId,
       resourceGroupId,
       userIdToAdd,
     });
+
     if (res.error) {
       setToastMsg(res.error);
       return;

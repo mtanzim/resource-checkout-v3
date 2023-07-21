@@ -99,7 +99,11 @@ export default async function Page({ params: rawParams }: never) {
           </ManagerResources>
           <div className="divider" />
           <ManageUsers resourceGroupId={groupId} users={appUsers}>
-            <NewUserForm curUserId={user.id} resourceGroupId={groupId} />
+            <NewUserForm
+              curUserId={user.id}
+              resourceGroupId={groupId}
+              curUsers={appUsers}
+            />
           </ManageUsers>
         </>
       )}
