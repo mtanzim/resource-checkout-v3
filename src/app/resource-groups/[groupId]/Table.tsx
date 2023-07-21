@@ -6,9 +6,10 @@ type Props = {
   resources: Array<Resource>;
   userId: string;
   userMap: Map<string, User>;
+  isAdmin: boolean;
 };
 
-export const Table = ({ resources, userId, userMap }: Props) => {
+export const Table = ({ resources, userId, userMap, isAdmin }: Props) => {
   const getCurOwnerLabel = (userId: string | null) => {
     if (!userId) {
       return "";
@@ -30,6 +31,7 @@ export const Table = ({ resources, userId, userMap }: Props) => {
               key={r.id}
               r={r}
               idx={idx}
+              isAdmin={isAdmin}
             />
           ))}
         </tbody>

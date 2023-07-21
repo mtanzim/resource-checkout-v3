@@ -9,6 +9,7 @@ type Props = {
   r: Resource;
   userId: string;
   curOwnerLabel: string;
+  isAdmin: boolean;
 };
 
 export function HeaderRow() {
@@ -16,15 +17,16 @@ export function HeaderRow() {
     <thead>
       <tr>
         <th className="w-1/8"></th>
-        <th className="w-1/4">Name</th>
-        <th className="w-1/4">Current owner</th>
-        <th className="w-1/4">Action</th>
+        <th className="w-1/6">Name</th>
+        <th className="w-1/6">Current owner</th>
+        <th className="w-1/6">Action</th>
+        <th className="w-1/6"></th>
       </tr>
     </thead>
   );
 }
 
-export function Row({ idx, r, userId, curOwnerLabel }: Props) {
+export function Row({ idx, r, userId, curOwnerLabel, isAdmin }: Props) {
   const [isPending, startTransition] = useTransition();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -69,6 +71,19 @@ export function Row({ idx, r, userId, curOwnerLabel }: Props) {
       </button>
     );
   };
+  const genSecondaryAction = (r: Resource) => {
+    if (isAdmin && r?.currentOwner && r?.currentOwner !== userId) {
+      return (
+        <button
+          onClick={() => startTransition(() => assignResourceLocal(null, r.id))}
+          className="btn btn-error"
+        >
+          Force unassign
+        </button>
+      );
+    }
+    return null;
+  };
 
   return (
     <>
@@ -77,6 +92,7 @@ export function Row({ idx, r, userId, curOwnerLabel }: Props) {
         <td className="w-1/4">{r.title}</td>
         <td className="w-1/4">{curOwnerLabel}</td>
         <td>{genAction(r)} </td>
+        <td>{genSecondaryAction(r)} </td>
       </tr>
       {errorMsg && (
         <div className="toast">

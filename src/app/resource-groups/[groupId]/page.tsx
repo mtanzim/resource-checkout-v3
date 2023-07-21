@@ -73,7 +73,7 @@ export default async function Page({ params: rawParams }: never) {
         <button className="btn btn-xs btn-secondary">Back</button>
       </Link>
       {resources.length > 0 ? (
-        <Table userMap={userMap} resources={resources} userId={user.id} />
+        <Table userMap={userMap} resources={resources} userId={user.id} isAdmin={isAdmin} />
       ) : (
         <p className="text my-4">Please add resources to get started.</p>
       )}
