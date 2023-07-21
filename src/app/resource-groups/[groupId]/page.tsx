@@ -6,8 +6,11 @@ import Link from "next/link";
 import { z } from "zod";
 import { AddNewResource } from "./AddNewResource";
 import ManagerResources from "./ManageResources";
-import ManageUsers, { AppUser } from "./ManageUsers";
+import ManageUsers from "./ManageUsers";
 import { Table } from "./Table";
+import { NewUserForm } from "./NewUserForm";
+import { ResourceGroup } from "@prisma/client";
+import { AppUser } from "@/types";
 
 const paramsSchema = z.object({
   groupId: z.coerce.number(),
@@ -72,6 +75,8 @@ export default async function Page({ params: rawParams }: never) {
     id: u.id,
     lastName: u.lastName,
     username: u.username,
+    // TODO: fix
+    primaryEmail: ""
   }));
 
   const resources = await getResources(groupId);
@@ -100,7 +105,7 @@ export default async function Page({ params: rawParams }: never) {
           </ManagerResources>
           <div className="divider" />
           <ManageUsers resourceGroupId={groupId} users={appUsers}>
-            <p className="text-red-500">Still working on the form</p>
+            <NewUserForm />
           </ManageUsers>
         </>
       )}

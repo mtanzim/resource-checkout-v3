@@ -1,15 +1,9 @@
 "use client";
 
 import { removeUserFromGroup } from "@/actions/resourceGroup";
+import { AppUser } from "@/types";
 import { useAuth } from "@clerk/nextjs";
 import { ResourceGroup } from "@prisma/client";
-
-export type AppUser = {
-  id: string;
-  username: string | null;
-  firstName: string | null;
-  lastName: string | null;
-};
 
 type Props = {
   children: React.ReactNode;

@@ -1,9 +1,4 @@
-"use client";
-
+import { redirect } from "next/navigation";
 export default function Home() {
-  return (
-    <main>
-      <h1>Welcome to the Resource Checkout app!</h1>
-    </main>
-  );
+  return redirect("/resource-groups/");
 }
