@@ -33,10 +33,10 @@ export default function ManageUsers({
         <span className="m-4 badge badge-primary badge-outline">Admin</span>
       </div>
       <div className="collapse-content">
-        {children}
+        <h2 className="text-xl m-2">Current Users</h2>
         {users.map((u) => (
           <div className="flex gap-4 my-4" key={u.id}>
-            <p>
+            <p className="mx-2">
               {u.firstName} {u.lastName}
             </p>
             {u.id !== userId && (
@@ -49,6 +49,8 @@ export default function ManageUsers({
             )}
           </div>
         ))}
+        <div className="divider"></div>
+        {children}
       </div>
     </div>
   );
