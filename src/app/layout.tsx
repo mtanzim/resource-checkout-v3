@@ -1,25 +1,28 @@
-import './globals.css'
-import { Inter } from 'next/font/google'
+import { ClerkProvider } from "@clerk/nextjs";
+import { Inter } from "next/font/google";
+import Nav from "./Nav";
+import "./globals.css";
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: 'Resource Checkout',
-  description: 'Manage resource sharing across your team!',
-}
+  title: "Resource Checkout",
+  description: "Manage resource sharing across your team!",
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <div className='m-2'>
-        {children}
-        </div>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={inter.className}>
+          <Nav />
+          <div className="my-8 mx-4 md:mx-12 lg:mx-72">{children}</div>
         </body>
-    </html>
-  )
+      </html>
+    </ClerkProvider>
+  );
 }

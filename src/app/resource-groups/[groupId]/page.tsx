@@ -1,9 +1,18 @@
+import { gatherUserDetails } from "@/actions/users";
 import { prisma } from "@/lib/prisma";
-import { z } from "zod";
-import { Table } from "./Table";
-import { AddNew } from "./AddNew";
+import { User } from "@clerk/backend";
+import { currentUser } from "@clerk/nextjs";
 import Link from "next/link";
+import { z } from "zod";
+import { AddNewResource } from "./AddNewResource";
 import ManagerResources from "./ManageResources";
+import ManageUsers from "./ManageUsers";
+import { Table } from "./Table";
+import { NewUserForm } from "./NewUserForm";
+import { ResourceGroup } from "@prisma/client";
+import { AppUser } from "@/types";
+import { userToAppUser } from "@/lib/utils";
+import { isCurrentUserAdmin } from "@/actions/resourceGroup";
 
 const paramsSchema = z.object({
   groupId: z.coerce.number(),
@@ -14,38 +23,86 @@ async function getResources(groupId: number) {
     where: {
       groupId,
     },
-    include: {
-      currentOwner: true,
-    },
     orderBy: {
       title: "asc",
     },
   });
 }
 
-async function selectUser() {
-  return prisma.user.findFirst();
+async function getCurrentGroup(userId: string, groupId: ResourceGroup["id"]) {
+  const groups = await prisma.resourceGroup.findMany({
+    where: {
+      id: groupId,
+      AND: {
+        users: {
+          has: userId,
+        },
+      },
+    },
+  });
+  return groups?.at(0);
 }
 
 export default async function Page({ params: rawParams }: never) {
   // TODO: get user context
-  const user = await selectUser();
+  const user = await currentUser();
   if (!user) {
-    throw new Error("user not found");
+    return null;
   }
   const { groupId } = paramsSchema.parse(rawParams);
+  const isAdmin = await isCurrentUserAdmin(user.id, groupId);
+
+  const group = await getCurrentGroup(user.id, groupId);
+  if (!group) {
+    throw new Error("group not found");
+  }
+
+  const users = await gatherUserDetails(group.users);
+  const appUsers: AppUser[] = users.map(userToAppUser);
+
   const resources = await getResources(groupId);
+  const userMap = new Map<string, User>();
+  users.forEach((u) => {
+    userMap.set(u.id, u);
+  });
+
   return (
     <div>
-      <h1 className="text-2xl">Resources</h1>
+      <h1 className="text-2xl">{group.title}</h1>
       <Link href="/resource-groups">
         <button className="btn btn-xs btn-secondary">Back</button>
       </Link>
-      <Table resources={resources} user={user} />
-      <div className="divider" />
-      <ManagerResources resources={resources}>
-        <AddNew groupId={groupId} />
-      </ManagerResources>
+      {resources.length > 0 ? (
+        <Table
+          userMap={userMap}
+          resources={resources}
+          userId={user.id}
+          isAdmin={isAdmin}
+        />
+      ) : (
+        <p className="text my-4">Please add resources to get started.</p>
+      )}
+
+      {isAdmin && (
+        <>
+          <div className="divider" />
+          <ManagerResources resources={resources}>
+            <AddNewResource groupId={groupId} />
+          </ManagerResources>
+          <div className="divider" />
+          <ManageUsers
+            resourceGroupId={groupId}
+            users={appUsers}
+            adminList={group.admins}
+          >
+            <NewUserForm
+              curUserId={user.id}
+              resourceGroupId={groupId}
+              curUsers={appUsers}
+            />
+          </ManageUsers>
+        </>
+      )}
     </div>
   );
 }

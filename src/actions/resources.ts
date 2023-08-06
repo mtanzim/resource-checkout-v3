@@ -1,13 +1,9 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { Resource, ResourceGroup, User } from "@prisma/client";
+import { Resource, ResourceGroup } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-
-async function selectUser() {
-  return prisma.user.findFirst();
-}
 
 const inputSchema = z.object({
   title: z.string().max(20).min(3),
@@ -15,11 +11,11 @@ const inputSchema = z.object({
 
 type AllocateResourceArgs = {
   resourceId: Resource["id"];
-  userId: User["id"] | null;
+  currentOwner: string | null;
 };
 
 export async function allocateResource({
-  userId,
+  currentOwner,
   resourceId,
 }: AllocateResourceArgs) {
   return prisma.resource
@@ -28,7 +24,7 @@ export async function allocateResource({
         id: resourceId,
       },
       data: {
-        userId,
+        currentOwner,
       },
     })
     .then(() => {
@@ -41,13 +37,14 @@ export async function allocateResource({
     });
 }
 
+// TODO: this may not be secure
 export async function addResource(
   data: FormData,
-  groupId: ResourceGroup["id"]
+  groupId: ResourceGroup["id"],
+  userId: string
 ): Promise<{ error: string | null }> {
   try {
-    const user = await selectUser();
-    if (!user) {
+    if (!userId) {
       throw new Error("user not found");
     }
     const resourceName = data.get("title");
@@ -66,12 +63,15 @@ export async function addResource(
   }
 }
 
+
+
+// TODO: check api protection
 export async function deleteResource(
-  resourceId: Resource["id"]
+  resourceId: Resource["id"],
+  userId: string
 ): Promise<{ error: string | null }> {
   try {
-    const user = await selectUser();
-    if (!user) {
+    if (!userId) {
       throw new Error("user not found");
     }
 

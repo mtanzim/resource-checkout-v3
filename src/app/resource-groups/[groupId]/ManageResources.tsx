@@ -1,16 +1,23 @@
 "use client";
 
 import { deleteResource } from "@/actions/resources";
-import { Resource, User } from "@prisma/client";
+import { useAuth } from "@clerk/nextjs";
+import { Resource } from "@prisma/client";
 
 type Props = {
-  resources: Array<Resource & { currentOwner: User | null }>;
+  resources: Array<Resource>;
   children: React.ReactNode;
 };
 
 export default function ManagerResources({ resources, children }: Props) {
+  const { userId } = useAuth();
+
+  if (!userId) {
+    return null;
+  }
+
   const onDelete = async (id: Resource["id"]) => {
-    return deleteResource(id);
+    return deleteResource(id, userId);
   };
   return (
     <div className="collapse bg-base-200">

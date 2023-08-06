@@ -1,10 +1,11 @@
 import { prisma } from "@/lib/prisma";
-import { Table } from "./Table";
+import { currentUser } from "@clerk/nextjs";
 import { AddNew } from "./AddNew";
+import { Table } from "./Table";
 
-async function getGroups(userId: number) {
+async function getGroups(userId: string) {
   const groups = await prisma.resourceGroup.findMany({
-    where: { users: { some: { id: userId } } },
+    where: { users: { hasSome: userId } },
     orderBy: {
       title: "asc",
     },
@@ -12,13 +13,9 @@ async function getGroups(userId: number) {
   return groups;
 }
 
-async function selectUser() {
-  return prisma.user.findFirst();
-}
-
 export default async function Page() {
   // TODO: get user context
-  const user = await selectUser();
+  const user = await currentUser();
   if (!user) {
     throw new Error("user not found");
   }
@@ -26,7 +23,12 @@ export default async function Page() {
   return (
     <div>
       <h1 className="text-2xl">My resource groups</h1>
-      <Table groups={groups} />
+      {groups.length > 0 ? (
+        <Table groups={groups} />
+      ) : (
+        <p className="text my-4">Please add resource groups to get started.</p>
+      )}
+      <div className="divider"></div>
       <AddNew />
     </div>
   );

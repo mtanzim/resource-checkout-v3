@@ -10,24 +10,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id             Int             @id @default(autoincrement())
-  email          String          @unique
-  name           String?
-  username       String?
-  resources      Resource[]
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  resourceGroups ResourceGroup[]
-}
-
 model Resource {
   id           Int           @id @default(autoincrement())
   title        String
-  userId       Int?
   groupId      Int
   group        ResourceGroup @relation(fields: [groupId], references: [id])
-  currentOwner User?         @relation(fields: [userId], references: [id])
+  // references clerk user id
+  currentOwner String?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 }
@@ -36,7 +25,10 @@ model ResourceGroup {
   id        Int        @id @default(autoincrement())
   title     String
   Resource  Resource[]
-  users     User[]
+  // references external user id
+  users     String[]
+  // references external user id
+  admins    String[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 }

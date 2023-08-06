@@ -1,15 +1,20 @@
 "use client";
 
 import { addResource } from "@/actions/resources";
+import { useAuth } from "@clerk/nextjs";
 import { useState } from "react";
 
-export function AddNew({ groupId }: { groupId: number }) {
+export function AddNewResource({ groupId }: { groupId: number }) {
+  const { userId } = useAuth();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  if (!userId) {
+    return null;
+  }
   return (
     <form
       action={async (formData: FormData) => {
         setErrorMsg(null);
-        const { error } = await addResource(formData, groupId);
+        const { error } = await addResource(formData, groupId, userId);
         if (error) {
           setErrorMsg(error);
         }
