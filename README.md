@@ -4,10 +4,12 @@
 
 - Create shared resources, and share with team members with a simple check out and return system
 
+  https://github.com/mtanzim/resource-checkout-v3/assets/20617008/6f037213-d80d-44f1-a183-b86740cca383
+
 ## Why
 
 - Experiment with React server components and server actions with NextJS v13
-- Experiment with edge serverless databases and deploys
+- Experiment with edge deploys and serverless DBs
 
 ## Getting started
 
