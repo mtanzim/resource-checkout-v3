@@ -1,5 +1,9 @@
 # resource-checkout
 
+## Demo
+
+- Create shared resources, and share with team members with a simple check out and return system
+
 ## Why
 
 - Experiment with React server components and server actions with NextJS v13
@@ -30,6 +34,7 @@ DATABASE_URL=
 
 - Database: [Supabase Postgres](https://supabase.com/)
 - Hosting: [Vercel](https://vercel.com/docs)
+- Authentication: [Clerk](https://clerk.com/docs)
 - ORM: [Prisma](https://www.prisma.io/) with `Data Proxy` for edge deploys
 - [Typescript](https://www.typescriptlang.org/)
 - [NextJS](https://nextjs.org/)
