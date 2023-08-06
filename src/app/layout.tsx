@@ -5,6 +5,7 @@ import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
+export const runtime = "edge";
 export const metadata = {
   title: "Resource Checkout",
   description: "Manage resource sharing across your team!",
