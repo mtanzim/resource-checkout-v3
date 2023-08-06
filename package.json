@@ -9,18 +9,20 @@
     "lint": "next lint",
     "typecheck": "tsc",
     "tsc:watch": "tsc --noEmit --incremental --watch",
-    "prettier": "npx prettier --write ."
+    "prettier": "npx prettier --write .",
+    "push:postgres-dev": "dotenv -e .env.local -- npx prisma db push"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^4.21.13",
-    "@prisma/client": "^4.15.0",
+    "@prisma/client": "^5.1.1",
     "@types/node": "20.2.6",
     "@types/react": "18.2.11",
     "@types/react-dom": "18.2.4",
     "autoprefixer": "10.4.14",
+    "dotenv-cli": "^7.2.1",
     "eslint": "8.42.0",
     "eslint-config-next": "13.4.4",
     "next": "13.4.4",
@@ -35,6 +37,6 @@
   "devDependencies": {
     "daisyui": "^3.0.23",
     "prettier": "2.8.8",
-    "prisma": "^4.15.0"
+    "prisma": "^5.1.1"
   }
 }

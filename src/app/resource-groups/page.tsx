@@ -5,7 +5,7 @@ import { Table } from "./Table";
 
 async function getGroups(userId: string) {
   const groups = await prisma.resourceGroup.findMany({
-    where: { users: { hasSome: userId } },
+    where: { users: { hasSome: [userId] } },
     orderBy: {
       title: "asc",
     },
