@@ -78,6 +78,7 @@ export default async function Page({ params: rawParams }: never) {
           resources={resources}
           userId={user.id}
           isAdmin={isAdmin}
+          groupName={group.title}
         />
       ) : (
         <p className="text my-4">Please add resources to get started.</p>

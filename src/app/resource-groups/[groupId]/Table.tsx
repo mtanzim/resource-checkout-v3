@@ -1,22 +1,28 @@
 import { Resource } from "@prisma/client";
 import { Row, HeaderRow } from "./Row";
 import { User } from "@clerk/backend";
+import { userToAppUser } from "@/lib/utils";
 
 type Props = {
   resources: Array<Resource>;
   userId: string;
   userMap: Map<string, User>;
   isAdmin: boolean;
+  groupName: string;
 };
 
-export const Table = ({ resources, userId, userMap, isAdmin }: Props) => {
-  const getCurOwnerLabel = (userId: string | null) => {
+export const Table = ({
+  resources,
+  userId,
+  userMap,
+  isAdmin,
+  groupName,
+}: Props) => {
+  const getCurOwnerObj = (userId: string | null) => {
     if (!userId) {
-      return "";
+      return;
     }
-    return `${userMap.get(userId)?.firstName ?? ""} ${
-      userMap.get(userId)?.lastName ?? ""
-    }`;
+    return userMap.get(userId);
   };
 
   return (
@@ -26,7 +32,12 @@ export const Table = ({ resources, userId, userMap, isAdmin }: Props) => {
         <tbody>
           {resources.map((r, idx) => (
             <Row
-              curOwnerLabel={getCurOwnerLabel(r.currentOwner)}
+              curOwner={
+                getCurOwnerObj(r.currentOwner)
+                  ? userToAppUser(getCurOwnerObj(r.currentOwner)!)
+                  : undefined
+              }
+              groupName={groupName}
               userId={userId}
               key={r.id}
               r={r}

@@ -1,6 +1,7 @@
 "use client";
 
 import { allocateResource } from "@/actions/resources";
+import { AppUser } from "@/types";
 import { Resource } from "@prisma/client";
 import { useState, useTransition } from "react";
 
@@ -8,8 +9,25 @@ type Props = {
   idx: number;
   r: Resource;
   userId: string;
-  curOwnerLabel: string;
   isAdmin: boolean;
+  groupName: string;
+  curOwner?: AppUser;
+};
+
+const MailLink: React.FC<{
+  user: AppUser;
+  r: Resource;
+  groupName: string;
+  children: React.ReactNode;
+}> = ({ user, r, groupName, children }) => {
+  return (
+    <a
+      target="_blank"
+      href={`mailto:${user.primaryEmail}?subject=Please release ${r.title} under ${groupName} &body=You are requested to release ${r.title} from ${groupName}`}
+    >
+      {children}
+    </a>
+  );
 };
 
 export function HeaderRow() {
@@ -26,9 +44,16 @@ export function HeaderRow() {
   );
 }
 
-export function Row({ idx, r, userId, curOwnerLabel, isAdmin }: Props) {
+export function Row({ idx, r, userId, curOwner, isAdmin, groupName }: Props) {
   const [isPending, startTransition] = useTransition();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const getCurOwnerLabel = (user?: AppUser) => {
+    if (!user) {
+      return "";
+    }
+    return `${user?.firstName ?? ""} ${user?.lastName ?? ""}`;
+  };
 
   if (!userId) {
     return null;
@@ -49,7 +74,7 @@ export function Row({ idx, r, userId, curOwnerLabel, isAdmin }: Props) {
   };
 
   const genAction = (r: Resource) => {
-    if (r?.currentOwner === userId) {
+    if (curOwner?.id === userId) {
       return (
         <button
           onClick={() => startTransition(() => assignResourceLocal(null, r.id))}
@@ -59,8 +84,12 @@ export function Row({ idx, r, userId, curOwnerLabel, isAdmin }: Props) {
         </button>
       );
     }
-    if (r?.currentOwner) {
-      return <button className="btn btn-warning">Nudge</button>;
+    if (curOwner) {
+      return (
+        <MailLink user={curOwner} r={r} groupName={groupName}>
+          <button className="btn btn-warning">Nudge</button>
+        </MailLink>
+      );
     }
     return (
       <button
@@ -72,7 +101,7 @@ export function Row({ idx, r, userId, curOwnerLabel, isAdmin }: Props) {
     );
   };
   const genSecondaryAction = (r: Resource) => {
-    if (isAdmin && r?.currentOwner && r?.currentOwner !== userId) {
+    if (isAdmin && curOwner && curOwner?.id !== userId) {
       return (
         <button
           onClick={() =>
@@ -92,7 +121,7 @@ export function Row({ idx, r, userId, curOwnerLabel, isAdmin }: Props) {
       <tr className="hover" key={r.id}>
         <th className="w-1/8">{idx + 1}</th>
         <td className="w-1/4">{r.title}</td>
-        <td className="w-1/4">{curOwnerLabel}</td>
+        <td className="w-1/4">{getCurOwnerLabel(curOwner)}</td>
         <td>{genAction(r)} </td>
         <td>{genSecondaryAction(r)} </td>
       </tr>
