@@ -29,7 +29,7 @@ export function Row({ idx, g }: Props) {
   const { userId } = useAuth();
 
   if (!userId) {
-    return null;
+    return <></>;
   }
 
   return (
@@ -37,7 +37,9 @@ export function Row({ idx, g }: Props) {
       <tr className="hover" key={g.id}>
         <th className="w-1/8">{idx + 1}</th>
         <td className="w-1/4">
-          <Link href={`/resource-groups/${g.id}`}>{g.title}</Link>
+          <Link href={`/resource-groups/${g.id}`}>
+            <button className="btn btn-outline btn-primary">{g.title}</button>
+          </Link>
         </td>
         <td className="w-1/8">
           <button

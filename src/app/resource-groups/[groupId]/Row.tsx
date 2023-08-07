@@ -82,7 +82,11 @@ export function Row({ idx, r, userId, curOwner, isAdmin, groupName }: Props) {
           }
           className="btn btn-info"
         >
-          {isPending ? "Loading..." : "Return"}
+          {isPending ? (
+            <span className="loading loading-bars loading-lg"></span>
+          ) : (
+            "Return"
+          )}
         </button>
       );
     }
@@ -98,9 +102,13 @@ export function Row({ idx, r, userId, curOwner, isAdmin, groupName }: Props) {
         onClick={() =>
           startTransition(async () => assignResourceLocal(userId, r.id))
         }
-        className="btn btn-success"
+        className="btn btn-success w-fit"
       >
-        {isPending ? "Loading..." : "Check out"}
+        {isPending ? (
+          <span className="loading loading-bars loading-lg"></span>
+        ) : (
+          "Check out"
+        )}
       </button>
     );
   };
@@ -113,7 +121,11 @@ export function Row({ idx, r, userId, curOwner, isAdmin, groupName }: Props) {
           }
           className="btn btn-error"
         >
-          Force unassign
+          {isPending ? (
+            <span className="loading loading-bars loading-lg"></span>
+          ) : (
+            "Force unassign"
+          )}
         </button>
       );
     }
