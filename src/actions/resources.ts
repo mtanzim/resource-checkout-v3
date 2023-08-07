@@ -18,23 +18,21 @@ export async function allocateResource({
   currentOwner,
   resourceId,
 }: AllocateResourceArgs) {
-  return prisma.resource
-    .update({
+  try {
+    await prisma.resource.update({
       where: {
         id: resourceId,
       },
       data: {
         currentOwner,
       },
-    })
-    .then(() => {
-      revalidatePath("/resources");
-      return { error: null };
-    })
-    .catch((err) => {
-      console.log(err);
-      return { error: "Could not allocate resource" };
     });
+    revalidatePath("/resource-groups");
+    return { error: null };
+  } catch (err) {
+    console.log(err);
+    return { error: "Could not allocate resource" };
+  }
 }
 
 // TODO: this may not be secure
@@ -55,7 +53,7 @@ export async function addResource(
         groupId,
       },
     });
-    revalidatePath("/resources");
+    revalidatePath("/resources-groups");
     return { error: null };
   } catch (err) {
     console.log(err);
@@ -78,7 +76,7 @@ export async function deleteResource(
         id: resourceId,
       },
     });
-    revalidatePath("/resources");
+    revalidatePath("/resources-groups");
     return { error: null };
   } catch (err) {
     console.log(err);

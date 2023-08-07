@@ -64,7 +64,7 @@ export function Row({ idx, r, userId, curOwnerLabel, isAdmin }: Props) {
     }
     return (
       <button
-        onClick={() => startTransition(() => assignResourceLocal(userId, r.id))}
+        onClick={() => startTransition(async () => assignResourceLocal(userId, r.id))}
         className="btn btn-success"
       >
         {isPending ? "Loading..." : "Check out"}
@@ -75,7 +75,9 @@ export function Row({ idx, r, userId, curOwnerLabel, isAdmin }: Props) {
     if (isAdmin && r?.currentOwner && r?.currentOwner !== userId) {
       return (
         <button
-          onClick={() => startTransition(() => assignResourceLocal(null, r.id))}
+          onClick={() =>
+            startTransition(async () => await assignResourceLocal(null, r.id))
+          }
           className="btn btn-error"
         >
           Force unassign
