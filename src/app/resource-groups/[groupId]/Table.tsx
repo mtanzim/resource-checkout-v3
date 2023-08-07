@@ -26,7 +26,7 @@ export const Table = ({
   };
 
   return (
-    <div className="overflow-x-auto p-8">
+    <div className="overflow-x-auto">
       <table className="table">
         <HeaderRow />
         <tbody>

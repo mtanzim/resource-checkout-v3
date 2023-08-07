@@ -21,7 +21,7 @@ export default function RootLayout({
       <html lang="en">
         <body className={inter.className}>
           <Nav />
-          <div className="my-8 mx-4 md:mx-12 lg:mx-72">{children}</div>
+          <div className="my-8 mx-4 lg:mx-72">{children}</div>
         </body>
       </html>
     </ClerkProvider>

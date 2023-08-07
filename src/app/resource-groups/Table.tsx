@@ -3,7 +3,7 @@ import { Row, HeaderRow } from "./Row";
 
 export const Table = ({ groups }: { groups: ResourceGroup[] }) => {
   return (
-    <div className="overflow-x-auto p-8">
+    <div className="overflow-x-auto">
       <table className="table">
         <HeaderRow />
         <tbody>
