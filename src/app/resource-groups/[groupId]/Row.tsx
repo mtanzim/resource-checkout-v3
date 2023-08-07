@@ -77,10 +77,12 @@ export function Row({ idx, r, userId, curOwner, isAdmin, groupName }: Props) {
     if (curOwner?.id === userId) {
       return (
         <button
-          onClick={() => startTransition(() => assignResourceLocal(null, r.id))}
+          onClick={() =>
+            startTransition(async () => assignResourceLocal(null, r.id))
+          }
           className="btn btn-info"
         >
-          Return
+          {isPending ? "Loading..." : "Return"}
         </button>
       );
     }
@@ -93,7 +95,9 @@ export function Row({ idx, r, userId, curOwner, isAdmin, groupName }: Props) {
     }
     return (
       <button
-        onClick={() => startTransition(async () => assignResourceLocal(userId, r.id))}
+        onClick={() =>
+          startTransition(async () => assignResourceLocal(userId, r.id))
+        }
         className="btn btn-success"
       >
         {isPending ? "Loading..." : "Check out"}
